@@ -1,0 +1,14 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Shop</title>
+</head>
+<body>
+    {% block content %}
+    <h3>Welcome to Shop</h3>
+    <p><a href="{% url 'shop:product_list' %}">Список товаров</a></p>
+    {% endblock content %}
+</body>
+</html>

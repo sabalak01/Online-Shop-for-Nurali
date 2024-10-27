@@ -1,0 +1,18 @@
+{% extends 'shop/home.html' %}
+
+{% block content %}
+<h1>Товары в категории {{ category.name }}</h1>
+
+{% for product in products %}
+<div>
+    <img src="{{ product.image.url }}" width="150">
+    <h3>{{ product.name }}</h3>
+    <p>{{ product.description }}</p>
+    <p>Цена: {{ product.price }} тг</p>
+    <p><a href="{% url 'shop:add_to_cart' product.id %}">Добвыить в корзину</a></p>
+</div>
+{% endfor %}
+
+<a href="{% url 'shop:product_list' %}">Назад к списку продуктов</a>
+
+{% endblock content %}

@@ -1,0 +1,12 @@
+{% extends 'shop/home.html' %}
+
+{% block content %}
+<h1>Список товаров</h1>
+
+<h3>Категории</h3>
+<ul>
+    {% for category in categories %}
+    <li><a href="{% url 'shop:category_products' category.id %}">{{ category.name }}</a></li>
+    {% endfor %}
+</ul>
+{% endblock content %}
