@@ -34,3 +34,11 @@ def add_to_cart(request, product_id):
         cart_product.quantity += 1
     cart_product.save()
     return redirect('shop:cart')
+
+def remove_from_cart(request, product_id):
+    cart = get_object_or_404(Cart, id=request.session.get('cart_id'))
+    cart_product = get_object_or_404(CartProduct, cart=cart, product_id=product_id)
+    cart_product.delete()
+    return redirect('shop:cart')
+
+
