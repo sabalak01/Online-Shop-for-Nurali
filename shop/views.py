@@ -23,7 +23,22 @@ def category_products(request, category_id):
 def cart_view(request):
     cart, _ = Cart.objects.get_or_create(id=request.session.get('cart_id'))
     request.session['cart_id'] = cart.id
-    return render(request, 'shop/cart.html', {'cart': cart})
+
+    cart_items = []
+    for item in cart.cartproduct_set.all():
+        total_price_per_item = item.product.price * item.quantity
+        cart_items.append({
+            'product': item.product,
+            'quantity': item.quantity,
+            'total_price': total_price_per_item
+        })
+
+    context = {
+        'cart': cart,
+        'cart_items': cart_items,
+    }
+
+    return render(request, 'shop/cart.html', context)
 
 def add_to_cart(request, product_id):
     cart, _ = Cart.objects.get_or_create(id=request.session.get('cart_id'))
@@ -36,9 +51,14 @@ def add_to_cart(request, product_id):
     return redirect('shop:cart')
 
 def remove_from_cart(request, product_id):
-    cart = get_object_or_404(Cart, id=request.session.get('cart_id'))
-    cart_product = get_object_or_404(CartProduct, cart=cart, product_id=product_id)
-    cart_product.delete()
-    return redirect('shop:cart')
+    cart,_ = Cart.objects.get_or_create(id=request.session.get('cart_id'))
+    product = get_object_or_404(Product, id=product_id)
 
+    try:
+        cart_product = CartProduct.objects.get(cart=cart, product=product)
+        cart_product.delete()
+    except CartProduct.DoesNotExist:
+        pass
+
+    return redirect('shop:cart')
 

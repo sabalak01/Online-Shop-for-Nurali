@@ -8,7 +8,7 @@
 <body>
     <h1>Ваша корзина</h1>
 
-    {% if cart.cartproduct_set.all %}
+    {% if cart_items %}
         <table>
             <thead>
                 <tr>
@@ -19,19 +19,20 @@
                 </tr>
             </thead>
             <tbody>
-                {% for item in cart.cartproduct_set.all %}
+                {% for item in cart_items %}
                     <tr>
                         <td>{{ item.product.name }}</td>
                         <td>{{ item.product.price }} тг</td>
                         <td>{{ item.quantity }}</td>
-                        <h3>Общая сумма: {{ total }} тг</h3>
-
+                        <td>{{ item.total_price }} тг</td>
+                        <td><a href="{% url 'shop:remove_from_cart' item.product.id %}">Удалить из корзины</a></td>
                     </tr>
                 {% endfor %}
             </tbody>
         </table>
 
         <h3>Общая сумма: {{ cart.total_price }} тг</h3>
+        <a href="{% url 'shop:product_list' %}">Вернуться к покупкам</a>
     {% else %}
         <p>Ваша корзина пуста.</p>
         <a href="{% url 'shop:product_list' %}">Вернуться к покупкам</a>
