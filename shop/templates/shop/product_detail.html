@@ -1,0 +1,30 @@
+{% extends 'shop/home.html' %}
+
+{% block content %}
+    <h1>{{ product.name }}</h1>
+    <p>{{ product.description }}</p>
+    <p>цена: {{ product.price }} тг</p>
+    <img src="{{ product.image.url }}" width="150">
+
+    <h3>Отзывы</h3>
+    {% for review in reviews %}
+        <div>
+            <p><strong>{{ review.user.username }}</strong> - {{ review.rating }} звёзд</p>
+            <p>{{ review.comment }}</p>
+            <p><small>Дата: {{ review.created_at }}</small></p>
+        </div>
+    {% empty %}
+        <p>Пока нет отзывов</p>
+    {% endfor %}
+
+    {% if user.is_authenticated %}
+        <h3>Добавить отзыв</h3>
+        <form method="post">
+            {% csrf_token %}
+            {{ review_form.as_p }}
+            <button type="submit">Отправить</button>
+        </form>
+    {% endif %}
+
+    <a href="{% url 'shop:product_list' %}">Назад к списку товаров</a>
+{% endblock content%}

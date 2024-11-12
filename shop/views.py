@@ -3,7 +3,8 @@ from lib2to3.fixes.fix_input import context
 
 from django.shortcuts import render,get_object_or_404,redirect
 from .models import Product, Category, Cart, CartProduct
-
+from django.contrib.auth.decorators import login_required
+from .forms import ReviewForm
 
 
 def home(request):
@@ -62,3 +63,25 @@ def remove_from_cart(request, product_id):
 
     return redirect('shop:cart')
 
+
+def product_detail(request, product_id):
+    product = get_object_or_404(Product, id=product_id)
+    reviews = product.reviews.all()
+    review_form = ReviewForm()
+
+    if request.method == "POST":
+        review_form = ReviewForm(request.POST)
+        if review_form.is_valid():
+            review = review_form.save(commit=False)
+            review.user = request.user
+            review.product = product
+            review.save()
+            return redirect('shop:product_detail', product_id=product.id)
+
+    context = {
+        'product': product,
+        'reviews': reviews,
+        'review_form': review_form
+    }
+
+    return render(request, 'shop/product_detail.html', context)
