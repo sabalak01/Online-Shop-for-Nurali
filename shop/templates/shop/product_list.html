@@ -1,12 +1,14 @@
 {% extends 'shop/home.html' %}
 
 {% block content %}
-<h1>Список товаров</h1>
+<h1 class="page-title">Список товаров</h1>
 
-<h3>Категории</h3>
-<ul>
+<h3 class="categories-title">Категории</h3>
+<ul class="categories-list">
     {% for category in categories %}
-    <li><a href="{% url 'shop:category_products' category.id %}">{{ category.name }}</a></li>
+    <li class="category-item">
+        <a href="{% url 'shop:category_products' category.id %}" class="category-link">{{ category.name }}</a>
+    </li>
     {% endfor %}
 </ul>
 {% endblock content %}

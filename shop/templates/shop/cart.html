@@ -1,41 +1,47 @@
-<!DOCTYPE html>
-<html lang="ru">
-<head>
-    <meta charset="UTF-8">
-    <title>Корзина</title>
-    <link rel="stylesheet">
-</head>
-<body>
-    <h1>Ваша корзина</h1>
+{% extends 'shop/home.html' %}
 
-    {% if cart_items %}
-        <table>
+{% block title %}Корзина{% endblock %}
+
+{% block content %}
+<h1 class="cart-title">Ваша корзина</h1>
+
+{% if cart_items %}
+    <div class="cart-container">
+        <table class="cart-table">
             <thead>
                 <tr>
                     <th>Товар</th>
+                    <th>Наименование</th>
                     <th>Цена</th>
                     <th>Количество</th>
                     <th>Всего</th>
+                    <th>Действие</th>
                 </tr>
             </thead>
             <tbody>
                 {% for item in cart_items %}
-                    <tr>
-                        <td>{{ item.product.name }}</td>
-                        <td>{{ item.product.price }} тг</td>
-                        <td>{{ item.quantity }}</td>
-                        <td>{{ item.total_price }} тг</td>
-                        <td><a href="{% url 'shop:remove_from_cart' item.product.id %}">Удалить из корзины</a></td>
-                    </tr>
+                <tr>
+                    <td><img src="{{ item.product.image.url }}" alt="{{ item.product.name }}" class="cart-item-image"></td>
+                    <td>{{ item.product.name }}</td>
+                    <td>{{ item.product.price }} тг</td>
+                    <td>{{ item.quantity }}</td>
+                    <td>{{ item.total_price }} тг</td>
+                    <td>
+                        <a href="{% url 'shop:remove_from_cart' item.product.id %}" class="btn btn-remove">Удалить</a>
+                    </td>
+                </tr>
                 {% endfor %}
             </tbody>
         </table>
-
-        <h3>Общая сумма: {{ cart.total_price }} тг</h3>
-        <a href="{% url 'shop:product_list' %}">Вернуться к покупкам</a>
-    {% else %}
+        <div class="cart-summary">
+            <p class="total">Общая сумма: {{ cart.total_price }} тг</p>
+            <a href="{% url 'shop:product_list' %}" class="btn btn-primary">Вернуться к покупкам</a>
+        </div>
+    </div>
+{% else %}
+    <div class="empty-cart">
         <p>Ваша корзина пуста.</p>
-        <a href="{% url 'shop:product_list' %}">Вернуться к покупкам</a>
-    {% endif %}
-</body>
-</html>
+        <a href="{% url 'shop:product_list' %}" class="btn btn-primary">Вернуться к покупкам</a>
+    </div>
+{% endif %}
+{% endblock %}

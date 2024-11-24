@@ -1,19 +1,23 @@
 {% extends 'shop/home.html' %}
 
 {% block content %}
-<h1>Товары в категории {{ category.name }}</h1>
+<h1 class="category-title">Товары в категории {{ category.name }}</h1>
 
-{% for product in products %}
-<div>
-    <img src="{{ product.image.url }}" width="150">
-    <h3>{{ product.name }}</h3>
-    <p>{{ product.description }}</p>
-    <p>Цена: {{ product.price }} тг</p>
-    <p><a href="{% url 'shop:add_to_cart' product.id %}">Добвавить в корзину</a></p>
-    <p><a href="{% url 'shop:product_detail' product.id %}">Подробнее</a></p>
+<div class="products-list">
+    {% for product in products %}
+    <div class="product-card">
+        <img src="{{ product.image.url }}" alt="{{ product.name }}" class="product-image" width="150">
+        <h3 class="product-name">{{ product.name }}</h3>
+        <p class="product-description">{{ product.description }}</p>
+        <p class="product-price">Цена: {{ product.price }} тг</p>
+        <div class="product-actions">
+            <a href="{% url 'shop:add_to_cart' product.id %}" class="btn btn-add-to-cart">Добавить в корзину</a>
+            <a href="{% url 'shop:product_detail' product.id %}" class="btn btn-details">Подробнее</a>
+        </div>
+    </div>
+    {% endfor %}
 </div>
-{% endfor %}
 
-<a href="{% url 'shop:product_list' %}">Назад к списку продуктов</a>
+<a href="{% url 'shop:product_list' %}" class="btn btn-back">Назад к списку продуктов</a>
 
 {% endblock content %}

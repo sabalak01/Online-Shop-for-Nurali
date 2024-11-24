@@ -48,3 +48,4 @@ class Review(models.Model):
         return f'{self.user.username} - {self.rating} звезд'
 
 
+

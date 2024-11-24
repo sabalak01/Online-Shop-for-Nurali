@@ -1,15 +1,29 @@
+{% load static %}
 <!doctype html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Shop</title>
+    <link rel="stylesheet" href="{% static 'style.css' %}">
 </head>
 <body>
-    {% block content %}
-    <h3>Welcome to Shop</h3>
-    <p><a href="{% url 'shop:product_list' %}">Список товаров</a></p>
-    <p><a href="{% url 'shop:cart' %}">Корзина</a></p>
-    {% endblock content %}
+    <div class="container">
+        {% block content %}
+        <h3>Welcome to Shop</h3>
+        <nav>
+            {% if user.is_authenticated %}
+                <p>Привет, {{ user.username }}!</p>
+                <p><a href="{% url 'logout' %}">Выйти</a></p>
+            {% else %}
+                <p><a href="{% url 'login' %}">Войти</a></p>
+                <p><a href="{% url 'register' %}">Регистрация</a></p>
+            {% endif %}
+        </nav>
+        <p><a href="{% url 'shop:product_list' %}">Список товаров</a></p>
+        <p><a href="{% url 'shop:cart' %}">Корзина</a></p>
+        {% endblock content %}
+    </div>
+
 </body>
 </html>
