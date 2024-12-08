@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Личный кабинет</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'style.css' %}">
+</head>
+<body>
+
+    <div class="profile-container">
+        <h1 class="profile-title">Информация о профиле</h1>
+
+        <div class="profile-card">
+
+            <div class="profile-avatar">
+                {% if profile.avatar %}
+                    <img src="{{ profile.avatar.url }}" alt="Avatar" width="150">
+                {% else %}
+                    <p>Фото не загружено</p>
+                {% endif %}
+            </div>
+
+            <div class="profile-details">
+                <p><strong>Имя:</strong> {{ profile.first_name }}</p>
+                <p><strong>Фамилия:</strong> {{ profile.last_name }}</p>
+                <p><strong>Номер телефона:</strong> {{ profile.phone_number }}</p>
+                <p><strong>Адрес:</strong> {{ profile.address }}</p>
+            </div>
+        </div>
+        <div class="profile-action">
+            <p><a href="{% url 'profile_edit' %}" class="profile-edit-btn">Редактировать профиль</a></p>
+            <p><a href="{% url 'logout' %}" class="profile-logout-btn">Выйти</a></p>
+            <p><a href="{% url 'home' %}">Выйти на главную страницу</a></p>
+        </div>
+    </div>
+</body>
+</html>

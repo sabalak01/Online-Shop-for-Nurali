@@ -1,33 +1,32 @@
-from itertools import product
-from lib2to3.fixes.fix_input import context
-
-from django.shortcuts import render,get_object_or_404,redirect
-from .models import Product, Category, Cart, CartProduct
+from django.shortcuts import render, get_object_or_404, redirect
+from .models import Product, Category, Cart, CartItem, Coupon
 from django.contrib.auth.decorators import login_required
 from .forms import ReviewForm
 
 
 def home(request):
-    return render(request,'shop/home.html')
+    return render(request, 'shop/home.html')
+
 
 def product_list(request):
     products = Product.objects.all()
     categories = Category.objects.all()
-    context = {'products': products, 'categories':categories}
-    return render(request,'shop/product_list.html',context)
+    context = {'products': products, 'categories': categories}
+    return render(request, 'shop/product_list.html', context)
+
 
 def category_products(request, category_id):
     category = get_object_or_404(Category, id=category_id)
     products = category.products.all()
-    return render(request, 'shop/category_products.html', {'products':products, 'category':category})
+    return render(request, 'shop/category_products.html', {'products': products, 'category': category})
+
 
 def cart_view(request):
-    cart, _ = Cart.objects.get_or_create(id=request.session.get('cart_id'))
-    request.session['cart_id'] = cart.id
+    cart, _ = Cart.objects.get_or_create(user=request.user if request.user.is_authenticated else None)
 
     cart_items = []
-    for item in cart.cartproduct_set.all():
-        total_price_per_item = item.product.price * item.quantity
+    for item in cart.items.all():
+        total_price_per_item = item.subtotal()
         cart_items.append({
             'product': item.product,
             'quantity': item.quantity,
@@ -41,25 +40,35 @@ def cart_view(request):
 
     return render(request, 'shop/cart.html', context)
 
+
 def add_to_cart(request, product_id):
-    cart, _ = Cart.objects.get_or_create(id=request.session.get('cart_id'))
-    request.session['cart_id'] = cart.id
+    cart, _ = Cart.objects.get_or_create(user=request.user if request.user.is_authenticated else None)
     product = get_object_or_404(Product, id=product_id)
-    cart_product, created = CartProduct.objects.get_or_create(cart=cart, product=product)
+    cart_item, created = CartItem.objects.get_or_create(cart=cart, product=product)
     if not created:
-        cart_product.quantity += 1
-    cart_product.save()
+        cart_item.quantity += 1
+    cart_item.save()
+
+    cart.total_price = cart.total()
+    cart.save()
+
     return redirect('shop:cart')
 
+
+
 def remove_from_cart(request, product_id):
-    cart,_ = Cart.objects.get_or_create(id=request.session.get('cart_id'))
+    cart, _ = Cart.objects.get_or_create(user=request.user if request.user.is_authenticated else None)
     product = get_object_or_404(Product, id=product_id)
 
     try:
-        cart_product = CartProduct.objects.get(cart=cart, product=product)
-        cart_product.delete()
-    except CartProduct.DoesNotExist:
+        cart_item = CartItem.objects.get(cart=cart, product=product)
+        cart_item.delete()
+    except CartItem.DoesNotExist:
         pass
+
+
+    cart.total_price = cart.total()
+    cart.save()
 
     return redirect('shop:cart')
 
@@ -85,3 +94,16 @@ def product_detail(request, product_id):
     }
 
     return render(request, 'shop/product_detail.html', context)
+
+
+def apply_coupon(request):
+    cart = Cart.objects.get(user=request.user)
+    coupon_code = request.POST.get('coupon_code')
+
+    try:
+        coupon = Coupon.objects.get(code=coupon_code)
+        cart.apply_discount(coupon)
+        return redirect('shop:cart')
+    except Coupon.DoesNotExist:
+
+        return redirect('shop:cart')

@@ -33,6 +33,16 @@
                 {% endfor %}
             </tbody>
         </table>
+
+        <div class="coupon-form">
+            <form method="post" action="{% url 'shop:apply_coupon' %}">
+                {% csrf_token %}
+                <input type="text" name="coupon_code" placeholder="Введите код купона" required>
+                <button type="submit">Применить купон</button>
+            </form>
+        </div>
+
+
         <div class="cart-summary">
             <p class="total">Общая сумма: {{ cart.total_price }} тг</p>
             <a href="{% url 'shop:product_list' %}" class="btn btn-primary">Вернуться к покупкам</a>
